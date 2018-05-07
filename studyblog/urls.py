@@ -13,9 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
+from blog.feeds import AllArticleRssFeed
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-]
+    url(r'^accounts/', include('oauth.urls', namespace='oauth')),  # oauth,只展现一个用户登录界面
+    url(r'^comment/', include('comment.urls', namespace='comment')),  # comment
+    url(r'', include('blog.urls', namespace='blog')),
+    url(r'account', include('allauth.urls')),
+    url(r'^feed/$', AllArticleRssFeed(), name='rss'),  # rss订阅
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 加入这个才能显示media文件
