@@ -1,12 +1,12 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from blog.models import Article
-from .models import ArticleComment
+from .models import ArticleComment, Notification
 
 
 # Create your views here.
@@ -41,3 +41,31 @@ def NotificationView(request, is_read=None):
     '''展示提示消息列表'''
     now_date = datetime.now()
     return render(request, 'comment/notification.html', context={'is_read': is_read, 'now_date': now_date})
+
+
+@login_required
+@require_POST
+def mark_to_read(request):
+    '''将一个消息标记为已读'''
+    if request.is_ajax():
+        data = request.POST
+        user = request.user
+        id = data.get('id')
+        info = get_object_or_404(Notification, get_p=user, id=id)
+        info.mark_to_read()
+        return JsonResponse({'msg': 'mark success'})
+    return JsonResponse({'msg': 'miss'})
+
+
+@login_required
+@require_POST
+def mark_to_delete(request):
+    '''将一个消息删除'''
+    if request.is_ajax():
+        data = request.POST
+        user = request.user
+        id = data.get('id')
+        info = get_object_or_404(Notification, get_p=user, id=id)
+        info.delete()
+        return JsonResponse({'msg': 'delete success'})
+    return JsonResponse({'msg': 'miss'})

@@ -52,9 +52,9 @@ class Notification(models.Model):  # 通知信息
     create_date = models.DateTimeField('提示时间', auto_now_add=True)
     is_read = models.BooleanField('是否已读', default=False)
 
-    # def mark_to_read(self):
-    #     self.is_read = True
-    #     self.save(update_fields=['is_read'])
+    def mark_to_read(self):
+        self.is_read = True
+        self.save(update_fields=['is_read'])
 
     class Meta:
         verbose_name = '提示信息'

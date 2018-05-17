@@ -23,6 +23,18 @@ def get_notifications_count(user, f=None):
 
 
 @register.simple_tag
+def get_notifications(user,f=None):
+    '''获取一个用户的对应条件下的提示信息'''
+    if f=='true':
+        lis = user.notification_get.filter(is_read=True)
+    elif f=='false':
+        lis = user.notification_get.filter(is_read=False)
+    else:
+        lis = user.notification_get.all()
+    return lis
+
+
+@register.simple_tag
 def get_parent_comments(entry):
     '''获取一个文章的父评论列表'''
     lis = entry.article_comments.filter(parent=None)

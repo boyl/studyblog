@@ -34,6 +34,9 @@ class Tag(models.Model):  # 文章标签
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('blog:tag', kwargs={'slug': self.slug})
+
 
 class Category(models.Model):  # 文章分类
     name = models.CharField('文章分类', max_length=20)
@@ -84,6 +87,15 @@ class Article(models.Model):  # 文章
     def update_views(self):
         self.views += 1
         self.save(update_fields=['views'])
+
+    def body_to_markdown(self):
+        return markdown.markdown(
+            self.body,
+            extensions=[
+                'markdown.extensions.extra',
+                'markdown.extensions.codehilite',
+            ]
+        )
 
 
 # 时间线

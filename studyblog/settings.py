@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,22 +53,34 @@ INSTALLED_APPS = [
     'blog',
     'comment',
     'tool',
+    'crispy_forms',
+    'imagekit',
+    'rest_framework',
+    'haystack',
 ]
 
 # 自定义用户model
 AUTH_USER_MODEL = 'oauth.Ouser'
 
-# allauth配置
-AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+# 设置登录和注册成功后重定向的页面，默认是/accounts/profile/
+LOGIN_REDIRECT_URL = "/"
 
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+SITE_ID = 3
 
-# allauth 配置
-SITE_ID = 1
+# 禁用注册邮箱验证
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# 登录方式，选择用户名或者邮箱都能登录
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+
+# 设置用户注册的时候必须填写邮箱地址
+ACCOUNT_EMAIL_REQUIRED = True
+
+# 登出直接退出，不用确认
+ACCOUNT_LOGOUT_ON_GET = True
+
+# 表单插件的配置
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -92,10 +105,21 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                'blog.context_processors.settings_info',  # 自定义上下文管理器
             ],
         },
     },
 ]
+
+# allauth配置
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 WSGI_APPLICATION = 'studyblog.wsgi.application'
 
@@ -163,10 +187,41 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 网站默认设置和上下文信息
-SITE_END_TITLE = '网站的名称，如SEO空间'
-SITE_DESCRIPTION = '网站描述'
-SITE_KEYWORDS = '网站关键词，多个词用英文逗号隔开'
+SITE_END_TITLE = 'TendCode'
+SITE_DESCRIPTION = 'description-网站描述'
+SITE_KEYWORDS = 'keyword-网站关键词，多个词用英文逗号隔开'
 
 # 统一分页设置
 BASE_PAGE_BY = 10
 BASE_ORPHANS = 5
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+# 邮箱设置
+EMAIL_HOST = 'smtp.sina.com'
+EMAIL_HOST_USER = 'luowen950006@sina.com'
+EMAIL_HOST_PASSWORD = 'lw*1995'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True  # 因465端口，需启用此项
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # 默认发件人，不设置的话django默认使用的webmaster@localhost，所以要设置成自己可用的邮箱
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'blog.whoosh_cn_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10  # 对搜索结果分页  已重新定义搜索试图, 不必全局设置.
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
