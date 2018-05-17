@@ -209,11 +209,10 @@ CACHES = {
 
 # 邮箱设置
 EMAIL_HOST = 'smtp.sina.com'
-EMAIL_HOST_USER = 'luowen950006@sina.com'
-EMAIL_HOST_PASSWORD = 'lw*1995'
+
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True  # 因465端口，需启用此项
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # 默认发件人，不设置的话django默认使用的webmaster@localhost，所以要设置成自己可用的邮箱
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # 默认发件人，不设置的话django默认使用的webmaster@localhost，所以要设置成自己可用的邮箱
 
 
 HAYSTACK_CONNECTIONS = {
